@@ -1,0 +1,2 @@
+# Get all merge commits with format: hash, author, date, sybject, body
+git log --first-parent --merges --pretty=format:"%h    %aN    %C(white)%<(5)%aI%Creset %C(red bold)%<(5)%d%Creset %s    %b" > C:\temp\gitlog.csv
