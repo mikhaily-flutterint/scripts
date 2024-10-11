@@ -18,3 +18,20 @@ $file = "FILE_PATH.csv"
 			'state' = $_.state
         }
     } | Export-Csv -Path $file -NoTypeInformation -Force 
+    
+#v4 - with date filter
+$repo = "REPO_NAME"
+$file = "FILE_PATH.csv"
+$Date = "2024-01-01"
+
+(gh pr list --repo $repo --state merged --base master --json title,headRefName,mergedAt,mergeStateStatus,state	 -L 500 | 
+    ConvertFrom-Json) |
+    Where-Object {$_.mergedAt -gt $Date } |
+    ForEach-Object {
+        [PsCustomObject]@{
+            'title' = $_.title
+            'headRefName' = $_.headRefName
+            'mergedAt' = $_.mergedAt
+			'state' = $_.state
+        }
+    } | Export-Csv -Path $file -NoTypeInformation -Force 
