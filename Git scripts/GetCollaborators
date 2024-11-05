@@ -1,0 +1,32 @@
+###  PREREQUISITES
+###  
+###  Install GitHub CLI: Download and install the GitHub CLI for Windows from the GitHub CLI releases page: https://github.com/cli/cli/releases
+###  
+###  Authenticate with GitHub CLI: Open Command Prompt or PowerShell and authenticate using your GitHub account: gh auth login 
+###
+
+# Define the repository owner and name
+$owner = "FlutterInt"
+$repos = @("fips-da-dataeco-dwh","fips-da-dataeco-borat","fips-da-dataeco-fit","fips-da-dataeco-fit-release-scripts","fips-da-dataeco-fit-website")
+$date = Get-Date -Format "ddMMyyyy"
+$filename = "c:\temp\" + $date + "_SOX_repos" + ".csv" 
+$data = @()
+
+ForEach($repo in $repos)
+{
+    
+    
+    # Fetch the list of collaborators
+    $collaborators = gh api -H "Accept: application/vnd.github.v3+json" /repos/$owner/$repo/collaborators | ConvertFrom-Json
+  
+    # Parse the JSON and prepare the data
+    ForEach ($collaborator in $collaborators) {
+        $data += [PSCustomObject]@{
+            Repo = $repo
+            Login = $collaborator.login
+            Role = $collaborator.role_name
+        }
+    }
+
+    $data | Export-Csv -Path $filename -NoTypeInformation
+}
